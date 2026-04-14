@@ -93,8 +93,7 @@ export default function App() {
   // 2. BUSCAR DADOS (ESPERA O USUÁRIO EXISTIR)
   // ==========================================
   useEffect(() => {
-    // ⚠️ REGRA CRÍTICA: Só tenta ler do Firestore SE tivermos um usuário (mesmo anônimo)
-    if (!user) return; 
+    // ⚠️ REGRA CRÍTICA: Só tenta ler do Firestore SE tivermos um usuário (mesmo anônimo) 
 
     // Ouve a coleção de Skins
     const skinsRef = collection(db, 'artifacts', appId, 'public', 'data', 'skins');
@@ -118,7 +117,7 @@ export default function App() {
       unsubsSkins();
       unsubsBanners();
     };
-  }, [user]); // 👈 A dependência [user] é o que faz os itens aparecerem após o F5
+  }, []); // 👈 A dependência [user] é o que faz os itens aparecerem após o F5
 
   // ==========================================
   // FUNÇÕES DE ADMINISTRAÇÃO E BANCO
@@ -236,7 +235,7 @@ export default function App() {
   };
 
   const goToStore = () => {
-    window.open('https://store.steampowered.com/', '_blank');
+    window.open('https://discord.gg/WmGKnd7pe9', '_blank');
   };
 
   const nextBanner = () => setCurrentBanner((prev) => (prev + 1) % banners.length);
