@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogOut, Plus, Trash2, Pencil, Image as ImageIcon, Lock, ArrowUp, ArrowDown } from 'lucide-react';
 import { db, auth } from '../config/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+
 
 export default function Admin({ skins, banners, setCurrentView }) {
   const [editingId, setEditingId] = useState(null);
@@ -12,6 +13,19 @@ export default function Admin({ skins, banners, setCurrentView }) {
     weapon: '', name: '', condition: 'Factory-New', category: 'RIFLES', image: '', steamPrice: '', price: '', float: 0, pattern: 0, buyLink: ''
   });
   const [newBanner, setNewBanner] = useState('');
+
+  useEffect(() => {
+    // Escuta se o usuário está logado
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      // Se não tiver usuário, ou o email não for o seu email secreto do .env...
+      if (!user || user.email !== import.meta.env.VITE_ADMIN_EMAIL) {
+        alert("Acesso negado: Área restrita.");
+        setCurrentView('home'); // Expulsa o invasor de volta para a Home usando a sua função!
+      }
+    });
+
+    return () => unsubscribe();
+  }, [setCurrentView]);
 
   const formatCurrency = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 

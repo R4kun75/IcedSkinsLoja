@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Arquivos de chaves e senhas locais
+.env
+.env.local

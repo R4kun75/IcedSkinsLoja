@@ -1,19 +1,21 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// Importando as funções principais do Firebase
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore"; // Banco de dados
+import { getAuth } from "firebase/auth";           // Autenticação/Login
 
-// ⚠️ ATENÇÃO: NÃO mude o nome "firebaseConfig" aqui abaixo!
+// A configuração agora puxa as chaves secretas do arquivo .env usando o padrão do Vite
 const firebaseConfig = {
-  apiKey: "AIzaSyBRlA5tsvvrGub1dXnPdnt91H0-LlTP5TA",
-  authDomain: "icedskins-ac654.firebaseapp.com",
-  projectId: "icedskins-ac654",
-  storageBucket: "icedskins-ac654.firebasestorage.app",
-  messagingSenderId: "919518701360",
-  appId: "1:919518701360:web:e40919e838511706030af5",
-  measurementId: "G-PTYY6LGQSJ"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Se o nome acima estiver correto, esta linha abaixo vai funcionar perfeitamente:
+// Inicializando o aplicativo do Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+// Exportando os serviços para podermos usar em outras partes do site (como Admin e Login)
 export const db = getFirestore(app);
+export const auth = getAuth(app);
