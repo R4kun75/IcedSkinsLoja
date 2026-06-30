@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { LogOut, Plus, Trash2, Pencil, Image as ImageIcon, Lock } from 'lucide-react';
+import { LogOut, Plus, Trash2, Pencil, Image as ImageIcon, Lock, ArrowUp, ArrowDown } from 'lucide-react';
 import { db, auth } from '../config/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 
 export default function Admin({ skins, banners, setCurrentView }) {
   const [editingId, setEditingId] = useState(null);
+  
+  // NOVO: Adicionado 'category' no estado inicial
   const [newSkin, setNewSkin] = useState({
-    weapon: '', name: '', condition: 'Factory-New', image: '', steamPrice: '', price: '', float: 0, pattern: 0, buyLink: ''
+    weapon: '', name: '', condition: 'Factory-New', category: 'RIFLES', image: '', steamPrice: '', price: '', float: 0, pattern: 0, buyLink: ''
   });
   const [newBanner, setNewBanner] = useState('');
 
@@ -38,7 +40,7 @@ export default function Admin({ skins, banners, setCurrentView }) {
       } else {
         await addDoc(collection(db, 'skins'), data);
       }
-      setNewSkin({ weapon: '', name: '', condition: 'Factory-New', image: '', steamPrice: '', price: '', float: 0, pattern: 0, buyLink: '' });
+      setNewSkin({ weapon: '', name: '', condition: 'Factory-New', category: 'RIFLES', image: '', steamPrice: '', price: '', float: 0, pattern: 0, buyLink: '' });
     } catch (err) { alert("Erro ao salvar! Verifique as permissões da base de dados."); }
   };
 
@@ -60,6 +62,19 @@ export default function Admin({ skins, banners, setCurrentView }) {
     await setDoc(doc(db, 'configuracoes', 'homepage'), { banners: newList }, { merge: true });
   };
 
+  // NOVO: Função para reordenar banners
+  const handleMoveBanner = async (idx, direction) => {
+    const newList = [...banners];
+    if (direction === 'up' && idx > 0) {
+      [newList[idx - 1], newList[idx]] = [newList[idx], newList[idx - 1]];
+    } else if (direction === 'down' && idx < newList.length - 1) {
+      [newList[idx], newList[idx + 1]] = [newList[idx + 1], newList[idx]];
+    } else {
+      return;
+    }
+    await setDoc(doc(db, 'configuracoes', 'homepage'), { banners: newList }, { merge: true });
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-8 text-white">
       <div className="flex justify-between items-center mb-10">
@@ -72,35 +87,52 @@ export default function Admin({ skins, banners, setCurrentView }) {
       <div className="grid lg:grid-cols-3 gap-10">
         <div className="space-y-8 lg:col-span-1">
           
-          {/* Formulário de Skins */}
           <div className="bg-[#132032] border border-[#1e324c] p-6 rounded-xl shadow-2xl">
             <h2 className="font-bold text-lg mb-6 flex items-center text-cyan-400"><Plus className="mr-2"/> {editingId ? 'EDITAR' : 'NOVO'} ITEM</h2>
             <form onSubmit={handleSaveSkin} className="space-y-4">
               <input type="text" placeholder="Arma (ex: AK-47)..." value={newSkin.weapon} onChange={e => setNewSkin({...newSkin, weapon: e.target.value})} className="w-full bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
               <input type="text" placeholder="Nome (ex: Linha Vermelha)..." value={newSkin.name} onChange={e => setNewSkin({...newSkin, name: e.target.value})} className="w-full bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
+              
               <div className="grid grid-cols-2 gap-4">
+                {/* NOVO: Select de Categoria */}
+                <select value={newSkin.category || "RIFLES"} onChange={e => setNewSkin({...newSkin, category: e.target.value})} className="bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400">
+                  <option value="FACAS">Facas</option>
+                  <option value="LUVAS">Luvas</option>
+                  <option value="PISTOLAS">Pistolas</option>
+                  <option value="SMGS">SMGs</option>
+                  <option value="RIFLES">Rifles</option>
+                  <option value="SNIPERS">Snipers</option>
+                  <option value="ESCOPETAS">Escopetas</option>
+                  <option value="ESPECIAIS">Especiais</option>
+                </select>
+
                 <select value={newSkin.condition} onChange={e => setNewSkin({...newSkin, condition: e.target.value})} className="bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400">
                   <option>Factory-New</option><option>Minimal-Wear</option><option>Field-Tested</option><option>Well-Worn</option><option>Battle-Scarred</option>
                 </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <input type="number" step="0.000000001" placeholder="Float (0 a 1)..." value={newSkin.float} onChange={e => setNewSkin({...newSkin, float: e.target.value})} className="w-full bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
                 <input type="number" placeholder="Pattern..." value={newSkin.pattern} onChange={e => setNewSkin({...newSkin, pattern: e.target.value})} className="bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
               </div>
-              <input type="number" step="0.000000001" placeholder="Float (0 a 1)..." value={newSkin.float} onChange={e => setNewSkin({...newSkin, float: e.target.value})} className="w-full bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
+
               <div className="grid grid-cols-2 gap-4">
                 <input type="number" step="0.01" placeholder="Preço Steam..." value={newSkin.steamPrice} onChange={e => setNewSkin({...newSkin, steamPrice: e.target.value})} className="bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
                 <input type="number" step="0.01" placeholder="Preço Loja..." value={newSkin.price} onChange={e => setNewSkin({...newSkin, price: e.target.value})} className="bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
               </div>
+
               <input type="url" placeholder="URL da Imagem..." value={newSkin.image} onChange={e => setNewSkin({...newSkin, image: e.target.value})} className="w-full bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" />
               <input type="url" placeholder="Link de Compra..." value={newSkin.buyLink} onChange={e => setNewSkin({...newSkin, buyLink: e.target.value})} className="w-full bg-black/40 border border-[#1e324c] p-3 rounded text-sm outline-none focus:border-cyan-400" required />
+              
               <button type="submit" className="w-full bg-cyan-500 py-3 rounded font-black hover:bg-cyan-400 text-black transition-all">
                 {editingId ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR NO BANCO'}
               </button>
               {editingId && (
-                <button type="button" onClick={() => {setEditingId(null); setNewSkin({weapon:'',name:'',condition:'Factory-New',image:'',steamPrice:'',price:'',float:0,pattern:0,buyLink:''})}} className="w-full mt-2 text-xs text-gray-500 hover:text-white">Cancelar Edição</button>
+                <button type="button" onClick={() => {setEditingId(null); setNewSkin({weapon:'',name:'',condition:'Factory-New', category: 'RIFLES', image:'',steamPrice:'',price:'',float:0,pattern:0,buyLink:''})}} className="w-full mt-2 text-xs text-gray-500 hover:text-white">Cancelar Edição</button>
               )}
             </form>
           </div>
 
-          {/* Formulário de Banners (AGORA DE VOLTA!) */}
           <div className="bg-[#132032] border border-[#1e324c] p-6 rounded-xl shadow-2xl">
             <h2 className="font-bold text-lg mb-6 flex items-center text-cyan-400"><ImageIcon className="mr-2"/> GESTÃO DE BANNERS</h2>
             <form onSubmit={handleAddBanner} className="flex gap-2 mb-6">
@@ -110,8 +142,14 @@ export default function Admin({ skins, banners, setCurrentView }) {
             <div className="space-y-3 max-h-52 overflow-y-auto pr-2 custom-scrollbar">
               {banners.map((b, i) => (
                 <div key={i} className="flex items-center justify-between bg-black/20 p-3 rounded-lg border border-[#1e324c]">
-                  <span className="text-[10px] text-gray-400 truncate w-40" title={b}>{b}</span>
-                  <button onClick={() => handleRemoveBanner(i)} className="text-red-500 hover:text-white transition-colors p-1"><Trash2 size={16}/></button>
+                  <span className="text-[10px] text-gray-400 truncate w-32" title={b}>{b}</span>
+                  
+                  {/* NOVO: Setinhas de Reordenar */}
+                  <div className="flex gap-1">
+                    {i > 0 && <button onClick={() => handleMoveBanner(i, 'up')} className="text-blue-400 hover:text-white p-1" title="Mover para cima"><ArrowUp size={16}/></button>}
+                    {i < banners.length - 1 && <button onClick={() => handleMoveBanner(i, 'down')} className="text-blue-400 hover:text-white p-1" title="Mover para baixo"><ArrowDown size={16}/></button>}
+                    <button onClick={() => handleRemoveBanner(i)} className="text-red-500 hover:text-white transition-colors p-1" title="Apagar"><Trash2 size={16}/></button>
+                  </div>
                 </div>
               ))}
               {banners.length === 0 && <p className="text-xs text-gray-500 text-center italic">Nenhum banner ativo.</p>}
@@ -120,7 +158,6 @@ export default function Admin({ skins, banners, setCurrentView }) {
 
         </div>
 
-        {/* Tabela de Skins */}
         <div className="lg:col-span-2 bg-[#132032] border border-[#1e324c] rounded-xl p-8 shadow-2xl overflow-x-auto">
           <table className="w-full text-left">
             <thead>
