@@ -18,6 +18,9 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const [skins, setSkins] = useState([]);
   const [banners, setBanners] = useState([]);
+  
+  // NOVO: Estado da barra de pesquisa
+  const [searchTerm, setSearchTerm] = useState('');
 
   // 1. Ouvinte de Autenticação
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // 2. Ouvinte de Dados (Skins e Banners)
+  // 2. Ouvinte de Dados
   useEffect(() => {
     const unsubsSkins = onSnapshot(collection(db, 'skins'), (snapshot) => {
       setSkins(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -45,9 +48,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0b121e]">
-      {currentView !== 'login' && <Header isAdmin={isAdmin} setCurrentView={setCurrentView} />}
+      {/* Passamos o searchTerm para o Header poder digitar */}
+      {currentView !== 'login' && <Header isAdmin={isAdmin} setCurrentView={setCurrentView} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
       
-      {currentView === 'home' && <Home skins={skins} banners={banners} />}
+      {/* Passamos o searchTerm para a Home poder filtrar */}
+      {currentView === 'home' && <Home skins={skins} banners={banners} searchTerm={searchTerm} />}
       {currentView === 'login' && <Login setCurrentView={setCurrentView} />}
       {currentView === 'admin' && <Admin skins={skins} banners={banners} setCurrentView={setCurrentView} />}
 
