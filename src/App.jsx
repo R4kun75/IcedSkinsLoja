@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from './config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // Componentes
 import Header from './components/Header';
@@ -57,6 +58,7 @@ export default function App() {
       {currentView === 'admin' && <Admin skins={skins} banners={banners} setCurrentView={setCurrentView} />}
 
       {currentView !== 'login' && <Footer isAdmin={isAdmin} setCurrentView={setCurrentView} />}
+      <SpeedInsights />
     </div>
   );
 }
