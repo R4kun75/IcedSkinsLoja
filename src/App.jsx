@@ -3,6 +3,7 @@ import { auth, db } from './config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 // Componentes
 import Header from './components/Header';
@@ -59,6 +60,7 @@ export default function App() {
 
       {currentView !== 'login' && <Footer isAdmin={isAdmin} setCurrentView={setCurrentView} />}
       <SpeedInsights />
+      <Analytics />
     </div>
   );
 }
