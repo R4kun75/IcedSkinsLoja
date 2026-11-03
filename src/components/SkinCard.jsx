@@ -1,4 +1,5 @@
 import React from 'react';
+import { dispararEventoGA } from '../analytics';
 
 const FALLBACK_IMAGE = 'https://placehold.co/300x200/080038/ef4444?text=Imagem+Indisponivel';
 
@@ -62,7 +63,17 @@ export default function SkinCard({ skin }) {
 
       {/* Botão de Compra mais "Gordinho" (py-3) */}
       <button 
-        onClick={() => window.open(skin.buyLink, '_blank')} 
+        onClick={() => {
+          // 1. Avisa o Google Analytics sobre o clique
+          dispararEventoGA('clique_comprar_skin', {
+            skin_arma: skin.weapon,
+            skin_nome: skin.name,
+            valor: skin.price
+          });
+          
+          // 2. Abre o link da loja normalmente
+          window.open(skin.buyLink, '_blank');
+        }} 
         className="m-4 mt-0 bg-cyan-500 hover:bg-cyan-400 text-[#0b121e] font-black py-3 rounded-lg text-xs shadow-[0_0_15px_rgba(27,193,211,0.3)] transition-all active:scale-95 uppercase tracking-widest"
       >
         COMPRAR AGORA

@@ -37,7 +37,7 @@ export default function Footer({ isAdmin, setCurrentView }) {
 
             {/* Link 2: Steam */}
             <a 
-              href="https://steamcommunity.com/id/Icedskins1" 
+              href="https://steamcommunity.com/id/Icedskins" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="bg-[#132032] w-11 h-11 rounded-full text-cyan-400 border border-[#1e324c] hover:bg-cyan-500 hover:text-black transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg"
@@ -73,9 +73,36 @@ export default function Footer({ isAdmin, setCurrentView }) {
           <div>
             <h4 className="text-white font-black mb-6 tracking-widest text-sm">LINKS ÚTEIS</h4>
             <ul className="space-y-3 font-bold">
-              <li><a href="#" className="hover:text-cyan-400 transition-colors">Termos de Serviço</a></li>
-              <li><a href="#" className="hover:text-cyan-400 transition-colors">Política de Privacidade</a></li>
-              <li><a href="#" className="hover:text-cyan-400 transition-colors">FAQ (Perguntas Frequentes)</a></li>
+              <li>
+                <a 
+                  href="https://discord.com/channels/1076120122864967712/1076146625849851954" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  Termos de Serviço
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://discord.com/channels/1076120122864967712/1076146625849851954" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  Política de Privacidade
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://discord.com/channels/1076120122864967712/1076146625849851954" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  FAQ (Perguntas Frequentes)
+                </a>
+              </li>
             </ul>
           </div>
 

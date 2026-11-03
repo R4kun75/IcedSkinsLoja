@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
+import { dispararEventoGA } from './analytics';
 
 // Componentes
 import Header from './components/Header';
@@ -23,6 +24,14 @@ export default function App() {
   
   // Estado da barra de pesquisa
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    dispararEventoGA('page_view', {
+      page_title: currentView.toUpperCase(),
+      page_location: window.location.href,
+      page_path: `/${currentView}`
+    });
+  }, [currentView]);
 
   // 1. Ouvinte de Autenticação do Supabase
   useEffect(() => {
